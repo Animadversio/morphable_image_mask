@@ -2,6 +2,7 @@
 Width = 600; Cent = Width /2 ; Radius = 100; %Center_dist = 40; 
 figure(1)
 img = 0.5 * ones(Width);
+bg = 0.5 * ones(Width);
 circ_mask = insertShape(img, 'FilledCircle', [Cent, Cent, Radius],...
                         'Color', [1,1,1], 'Opacity', 1);
 imshow(circ_mask)
@@ -32,7 +33,6 @@ imwrite(img, 'blurryblob.png', 'Alpha', blurry_blob);
 %%
 figure(1);hold on; imshow(img)
 contour_h = drawellipse(gca, 'Color',[0,0,0], 'FaceAlpha', 0.9);
-
 %%
 THETA = linspace(0, 2*pi,100); 
 UNIT_CIRC = [cos(THETA'), sin(THETA')];
@@ -69,15 +69,16 @@ blurry_free_mask = imgaussfilt(double(1 - mask),sigma);
 imwrite(img, 'blurryfreemask2_img.png', 'Alpha', blurry_free_mask);
 blurry_free_mask = imgaussfilt(double(mask),sigma);
 imwrite(img, 'blurryfreeblob2_img.png', 'Alpha', blurry_free_mask);
-%%
-figure(1);imshow(img)
+%% Ellipsoid shape mask 
+sigma = 10;
+figure(3);imshow(bg)
 contour_h = drawellipse(gca, 'Color',[0,0,0], 'FaceAlpha', 0.9);
 ellips_mask = createMask(contour_h);
 blurry_free_mask = imgaussfilt(double(1 - ellips_mask),sigma);
-imwrite(img, 'blurryfreeellipsmask.png', 'Alpha', blurry_free_mask);
+imwrite(bg, 'blurryfreeellipsmask2.png', 'Alpha', blurry_free_mask);
 blurry_free_mask = imgaussfilt(double(ellips_mask),sigma);
-imwrite(img, 'blurryfreeellipsblob.png', 'Alpha', blurry_free_mask);
-%%
+imwrite(bg, 'blurryfreeellipsblob2.png', 'Alpha', blurry_free_mask);
+%% Fuzzy shape mask 
 fig_h = figure(1);
 contour_h1 = fig_h.Children.Children(1);
 mask = createMask(contour_h1);
@@ -89,3 +90,17 @@ blurry_free_mask = imgaussfilt(double(1 - mask),sigma);
 imwrite(img, 'blurryfreemask_img2.png', 'Alpha', blurry_free_mask);
 blurry_free_mask = imgaussfilt(double(mask),sigma);
 imwrite(img, 'blurryfreeblob_img2.png', 'Alpha', blurry_free_mask);
+%% Make background masked cat image! 
+input = "Cat 6.jpg";%"Cat1-2.jpg";%Cat4.jpg
+output = "MaskCat 6.png";
+img = imread(fullfile("C:\Users\binxu\Pictures\",input));
+img_rsz = imresize(img, 0.25);
+imshow(img_rsz)
+contour_cat = drawfreehand;
+cat_mask = createMask(contour_cat);
+imwrite(img_rsz, output, 'Alpha', imgaussfilt(double(cat_mask),3));
+%%
+Width = 600;  %Center_dist = 40; 
+figure(2)
+bg = 0.5 * ones(Width);
+imwrite(bg, "background.png");
